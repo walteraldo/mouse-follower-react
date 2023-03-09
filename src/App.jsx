@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react'
 
 const FollowMouse = () => {
-  const [enabled, setEnabled] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  // useState para activar/desactivar cuando querramos que la bolita siga al puntero
+  const [enabled, setEnabled] = useState(false);
+  
+  // useState para guardar la posición
+  const [position, setPosition] = useState({ x: -20, y: -20})
 
-  // pointer move
+  // pointer move - seejecuta cada vez que cambia el enable
   useEffect(() => {
-    console.log('effect ', { enabled })
+    // console.log('effect ', { enabled })
 
     const handleMove = (event) => {
-      const { clientX, clientY } = event
+      const { clientX, clientY } = event;
+      // console.log('handleMove', clientX, clientY)
       setPosition({ x: clientX, y: clientY })
     }
 
-    if (enabled) {
-      window.addEventListener('pointermove', handleMove)
+    if (enabled) {                                          // si el enable es true 
+      window.addEventListener('pointermove', handleMove)    // cuando se mueva el puntero ejecutamos esa función
     }
 
-    // cleanup:
-    // -> cuando el componente se desmonta
-    // -> cuando cambian las dependencias, antes de ejecutar
-    //    el efecto de nuevo
+    // cuando se ejecuta el cleanup?
+    // a -> cuando el componente se desmonta
+    // b -> cuando cambian las dependencias, para limpiar la suscripción y antes de ejecutar el efecto de nuevo
     return () => { // cleanup method
       // console.log('cleanup')
       window.removeEventListener('pointermove', handleMove)
@@ -42,37 +45,44 @@ const FollowMouse = () => {
 
   return (
     <>
-      <div style={{
-        position: 'absolute',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        border: '1px solid #fff',
-        borderRadius: '50%',
-        opacity: 0.8,
-        pointerEvents: 'none',
-        left: -25,
-        top: -25,
-        width: 50,
-        height: 50,
-        transform: `translate(${position.x}px, ${position.y}px)`
-      }}
+      <div 
+        style={{
+          position: 'absolute',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          border: '1px solid #fff',
+          borderRadius: '50%',
+          opacity: 0.8,
+          pointerEvents: 'none',
+          left: -25,
+          top: -25,
+          width: 50,
+          height: 50,
+          transform: `translate(${position.x}px, ${position.y}px)`
+        }}
       />
-      <button onClick={() => setEnabled(!enabled)}>
-        {enabled ? 'Desactivar' : 'Activar'} seguir puntero
+      <button onClick={ () => setEnabled(!enabled) }>
+        { enabled ? 'Desactivar' : 'Activar' } seguir puntero  
       </button>
     </>
   )
 }
 
 function App () {
-
+  // para darnos cuenta cuando se ejecuta el cleanup
   const [mounted, setMounted] = useState(true);
 
+  
   return (
+    // toggle se desmonta el componente de seguir el puntero y se ejecuta el cleanup
+    // <main>
+    //   {/* si está montado renderiza el FollowMouse */}
+    //   { mounted && <FollowMouse /> }  
+    //   <button onClick={ () => setMounted(!mounted) } >
+    //     Toggle Mounted Followmouse Component
+    //   </button>
+    // </main>
     <main>
-      { mounted && <FollowMouse /> }
-      <button onClick={ () => setMounted(!mounted) } >
-        Toggle mounted Followmouse component
-      </button>
+      <FollowMouse />
     </main>
   )
 }
